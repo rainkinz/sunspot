@@ -54,7 +54,7 @@ shared_examples_for "facetable query" do
       end
       connection.should have_last_search_with(:"f.category_ids_im.facet.limit" => 10)
     end
-    
+
     it 'sets the facet offset' do
       search do
         facet :category_ids, :offset => 10
@@ -89,7 +89,14 @@ shared_examples_for "facetable query" do
       end
       connection.should have_last_search_with(:"f.title_ss.facet.prefix" => 'Test')
     end
-    
+
+    it "sets the prefix within localparams on a field when key is used" do
+      search do
+        facet :title, :prefix => 'Test', :name => 'title_one'
+      end
+      connection.should have_last_search_including(:"facet.field", "{!key=title_one facet.prefix=Test}title_ss")
+    end
+
     it 'sends a query facet for :any extra' do
       search do
         facet :category_ids, :extra => :any
